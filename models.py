@@ -5,23 +5,18 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from flask_migrate import Migrate
 
-database_name = "capstone"
-user_name = "anaborba"
-password = "012300a"
-database_path = "postgres://{}:{}@{}/{}".format(
-  user_name,
-  password,
-  'localhost:5432',
-  database_name)
-  
+os.environ['DATABASE_URL'] = '''postgres://heoxxydraglsmt:78b7fe5638a8b28c7a5e2e68568348f8b83ccb2003c5420d78535da083f82943@ec2-54-157-78-113.compute-1.amazonaws.com:5432/d7cu2pq6vjbrnc'''
 db = SQLAlchemy()
 
-def setup_db(app, database_path=database_path):
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
+def setup_db(app):
+    # app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
+    app.config["SQLALCHEMY_DATABASE_URI"] = app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://anaborba:012300a@localhost:5432/capstone'
+
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
-    # db.create_all()
+    db.create_all()
+
     migrate = Migrate(app, db)
 
 class Movies(db.Model):
