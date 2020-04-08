@@ -3,6 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import setup_db, Movies
+from auth import AuthError, requires_auth
 
 def create_app(test_config=None):
   app = Flask(__name__)
@@ -20,15 +21,23 @@ def create_app(test_config=None):
       return response
 
   @app.route('/')
-  def get_greeting():
-      excited = os.environ['EXCITED']
-      greeting = "Hello" 
-      if excited == 'true': greeting = greeting + "!!!!!"
-      return greeting
+  def welcome():
+    message = 'Welcome to the Casting Agency'
+    return jsonify(message)
 
-  @app.route('/coolkids')
-  def be_cool():
-      return "Be cool, man, be coooool! You're almost a FSND grad!"
+  @app.route('/movies', methods=['GET'])
+  @requires_auth(permission='get:movies')
+  def get_Movies(payload):
+      '''
+      This endpoint is responsible for returning all Movies from DB
+      '''
+      movies = Movies.query.all()
+      mov_format = [mov.format() for mov in movies]
+      result = {
+          "success": True,
+          "Movies": mov_format
+      }
+      return jsonify(result)
 
   return app
 
