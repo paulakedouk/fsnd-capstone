@@ -37,7 +37,7 @@ SET default_with_oids = false;
 -- Name: Actors; Type: TABLE; Schema: public; Owner: anaborba
 --
 
-CREATE TABLE public."Actors" (
+CREATE TABLE public.Actors (
     id integer NOT NULL,
     name character varying,
     age integer,
@@ -46,13 +46,13 @@ CREATE TABLE public."Actors" (
 );
 
 
-ALTER TABLE public."Actors" OWNER TO anaborba;
+ALTER TABLE public.Actors OWNER TO anaborba;
 
 --
 -- Name: Actors_id_seq; Type: SEQUENCE; Schema: public; Owner: anaborba
 --
 
-CREATE SEQUENCE public."Actors_id_seq"
+CREATE SEQUENCE public.Actors_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -60,20 +60,20 @@ CREATE SEQUENCE public."Actors_id_seq"
     CACHE 1;
 
 
-ALTER TABLE public."Actors_id_seq" OWNER TO anaborba;
+ALTER TABLE public.Actors_id_seq OWNER TO anaborba;
 
 --
 -- Name: Actors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: anaborba
 --
 
-ALTER SEQUENCE public."Actors_id_seq" OWNED BY public."Actors".id;
+ALTER SEQUENCE public.Actors_id_seq OWNED BY public.Actors.id;
 
 
 --
 -- Name: Movies; Type: TABLE; Schema: public; Owner: anaborba
 --
 
-CREATE TABLE public."Movies" (
+CREATE TABLE public.Movies (
     id integer NOT NULL,
     name character varying,
     length double precision,
@@ -81,13 +81,13 @@ CREATE TABLE public."Movies" (
 );
 
 
-ALTER TABLE public."Movies" OWNER TO anaborba;
+ALTER TABLE public.Movies OWNER TO anaborba;
 
 --
 -- Name: Movies_id_seq; Type: SEQUENCE; Schema: public; Owner: anaborba
 --
 
-CREATE SEQUENCE public."Movies_id_seq"
+CREATE SEQUENCE public.Movies_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -95,13 +95,13 @@ CREATE SEQUENCE public."Movies_id_seq"
     CACHE 1;
 
 
-ALTER TABLE public."Movies_id_seq" OWNER TO anaborba;
+ALTER TABLE public.Movies_id_seq OWNER TO anaborba;
 
 --
 -- Name: Movies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: anaborba
 --
 
-ALTER SEQUENCE public."Movies_id_seq" OWNED BY public."Movies".id;
+ALTER SEQUENCE public.Movies_id_seq OWNED BY public.Movies.id;
 
 
 --
@@ -131,21 +131,21 @@ ALTER TABLE public.alembic_version OWNER TO anaborba;
 -- Name: id; Type: DEFAULT; Schema: public; Owner: anaborba
 --
 
-ALTER TABLE ONLY public."Actors" ALTER COLUMN id SET DEFAULT nextval('public."Actors_id_seq"'::regclass);
+ALTER TABLE ONLY public.Actors ALTER COLUMN id SET DEFAULT nextval('public.Actors_id_seq'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: anaborba
 --
 
-ALTER TABLE ONLY public."Movies" ALTER COLUMN id SET DEFAULT nextval('public."Movies_id_seq"'::regclass);
+ALTER TABLE ONLY public.Movies ALTER COLUMN id SET DEFAULT nextval('public.Movies_id_seq'::regclass);
 
 
 --
 -- Data for Name: Actors; Type: TABLE DATA; Schema: public; Owner: anaborba
 --
 
-COPY public."Actors" (id, name, age, email, salary) FROM stdin;
+COPY public.Actors (id, name, age, email, salary) FROM stdin;
 1	ALi	30	ali@gmail.com	5000
 2	Ahmed	30	Ahmed@gmail.com	7000
 3	Noha	38	Noha@gmail.com	1000
@@ -156,14 +156,14 @@ COPY public."Actors" (id, name, age, email, salary) FROM stdin;
 -- Name: Actors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: anaborba
 --
 
-SELECT pg_catalog.setval('public."Actors_id_seq"', 3, true);
+SELECT pg_catalog.setval('public.Actors_id_seq', 3, true);
 
 
 --
 -- Data for Name: Movies; Type: TABLE DATA; Schema: public; Owner: anaborba
 --
 
-COPY public."Movies" (id, name, length, genre) FROM stdin;
+COPY public.Movies (id, name, length, genre) FROM stdin;
 1	GoGo	1.30000000000000004	Action
 2	alo	10.5	Thriler
 3	matygy	1.89999999999999991	Romance
@@ -174,7 +174,7 @@ COPY public."Movies" (id, name, length, genre) FROM stdin;
 -- Name: Movies_id_seq; Type: SEQUENCE SET; Schema: public; Owner: anaborba
 --
 
-SELECT pg_catalog.setval('public."Movies_id_seq"', 3, true);
+SELECT pg_catalog.setval('public.Movies_id_seq', 3, true);
 
 
 --
@@ -205,7 +205,7 @@ COPY public.alembic_version (version_num) FROM stdin;
 -- Name: Actors_pkey; Type: CONSTRAINT; Schema: public; Owner: anaborba
 --
 
-ALTER TABLE ONLY public."Actors"
+ALTER TABLE ONLY public.Actors
     ADD CONSTRAINT "Actors_pkey" PRIMARY KEY (id);
 
 
@@ -213,7 +213,7 @@ ALTER TABLE ONLY public."Actors"
 -- Name: Movies_pkey; Type: CONSTRAINT; Schema: public; Owner: anaborba
 --
 
-ALTER TABLE ONLY public."Movies"
+ALTER TABLE ONLY public.Movies
     ADD CONSTRAINT "Movies_pkey" PRIMARY KEY (id);
 
 
@@ -238,7 +238,7 @@ ALTER TABLE ONLY public.alembic_version
 --
 
 ALTER TABLE ONLY public.acting_in
-    ADD CONSTRAINT acting_in_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES public."Actors"(id);
+    ADD CONSTRAINT acting_in_actor_id_fkey FOREIGN KEY (actor_id) REFERENCES public.Actors(id);
 
 
 --
@@ -246,7 +246,7 @@ ALTER TABLE ONLY public.acting_in
 --
 
 ALTER TABLE ONLY public.acting_in
-    ADD CONSTRAINT acting_in_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES public."Movies"(id);
+    ADD CONSTRAINT acting_in_movie_id_fkey FOREIGN KEY (movie_id) REFERENCES public.Movies(id);
 
 
 --
