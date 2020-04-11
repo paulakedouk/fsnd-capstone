@@ -28,6 +28,11 @@ def create_app(test_config=None):
     def index():
         return render_template('login.html')
 
+    @app.route('/logged-in')
+    def loggedin():
+        return render_template('logged-in.html', movies=Movies.query.all(), actors=Actors.query.all())
+
+
     # Actors
 
     @app.route('/actors')
@@ -67,13 +72,102 @@ def create_app(test_config=None):
         '''
         movies = Movies.query.all()
         mov_format = [mov.format() for mov in movies]
+
         result = {
             "success": True,
             "movies": mov_format
         }
         return jsonify(result)
 
+    @app.route('/movies', methods=['POST'])
+    @requires_auth('post:movies')
+    def add_movie(payload):
+        new_title = request.get_json()['title']
+        print(new_title)
+        new_release_date = request.get_json()['releaseDate']
 
+        try:
+            new_movie = Movies(title=new_title, releaseDate=new_release_date)
+            new_movie.insert()
+
+            selection = Movies.query.filter(Movies.title == new_title).first()
+            return jsonify({
+                'id': selection.id,
+                'title': selection.title,
+                'releaseDate': selection.releaseDate,
+                'success': True
+            }), 200
+
+        except Exception:
+                abort(422)       
+
+
+
+    # Error Handlers
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "Resource not found"
+        }), 404
+
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+        "success": False,
+        "error": 422,
+        "message": "Unprocessable"
+        }), 422
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+        "success": False,
+        "error": 400,
+        "message": "Bad Request"
+        }), 400
+
+    @app.errorhandler(500)
+    def server_error(error):
+        return jsonify({
+        "success": False,
+        "error": 500,
+        "message": "Internal Server Error"
+        }), 500
+
+    @app.errorhandler(405)
+    def not_allowed(error):
+        return jsonify({
+        "success": False,
+        "error": 405,
+        "message": "Method Not Allowed"
+        }), 405
+
+    @app.errorhandler(401)
+    def unauthorized(error):
+        return jsonify({
+            "success": False,
+            "error": 401,
+            "message": "Unauthorized"
+        }), 401
+
+    @app.errorhandler(403)
+    def forbidden(error):
+        return jsonify({
+            "success": False,
+            "error": 403,
+            "message": "Forbidden"
+        }), 403
+
+    @app.errorhandler(AuthError)
+    def auth_error(error):
+        return jsonify({
+            "success": False,
+            "error": error.status_code,
+            "message": error.error
+        }), error.status_code
 
     return app
 

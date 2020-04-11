@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Udacity Casting Agency Capstone Project</title>
+	<style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;   
+        }
+        .button {
+            background-color: rgb(93, 97, 148);
+            text-decoration: none;
+            border-radius: 5px;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        .button:hover {
+            opacity: 0.8;
+        }
+        
+        ul {
+            padding-left: 0;
+        }
+        ol {
+            list-style-type: circle;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Udacity Casting Agency Capstone Project</h1>
+        <p>You can use the following API endpoints:</p>
+        <p>
+            <ul>
+                <li>Movies</li>
+                    <ol id="movies">
+                        {% for movie in movies %}
+                        <li>{{ movie.title }}</li>
+                        {% endfor %}
+                    </ol>
+                    <div id="error" class="hidden">Something went wrong!</div>
+                    <form method="post" action="/movies">
+                        <p>Add new Movie</p>
+                        <input type="text" name="title" />
+                        <input type="text" name="releaseDate" />
+                        <input type="submit" value="Add">
+                    </form>
+                <li>Actors</li>
+                    <ol id="actors">
+                        {% for actor in actors %}
+                        <li>{{ actor.name }}</li>
+                        {% endfor %}
+                    </ol>
+				<li>Assignments</li>
+			</ul>
+		</p>
+        <p><a href="https://fsndpaula.auth0.com/authorize?audience=api&response_type=token&client_id=EHUF6nr6QpYJSMYO9BQFjl4yqTsQjZ2m&redirect_uri=https://fsndpaula.auth0.com/" class="button" role="button">Logout</a></p>
+    </div>
+    <script>
+        document.getElementById('form').onsubmit = function(e) {
+            e.preventDefault();
+            fetch('movies', {
+                method: 'POST',
+                body: JSON.stringify({
+                    'title': document.getElementById('title').value
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                console.log(jsonResponse);
+                const liItem = document.createElement('LI');
+                liItem.innerHTML = jsonResponse['title'];
+                document.getElementById('movies').appendChild(liItem)
+            })
+            .catch(function() {
+                document.getElementById('error').className = '';
+            })
+        }
+    </script>
+</body>
+</html>

@@ -89,6 +89,6 @@ class Movies(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'release date': self.releaseDate.strftime('%c'),
+            'releaseDate': self.releaseDate.strftime('%c'),
             'actor_id': self.actor_id,
         }
