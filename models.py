@@ -1,20 +1,20 @@
 
 import os
-# from sqlalchemy import Column, String, Integer, Float, create_engine
+from sqlalchemy import Column, String, Integer, Float, create_engine
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, time as time_
 import json
 from flask_migrate import Migrate
 
 database_name = "capstone"
-# user_name = "anaborba"
-# password = "012300a"
-# database_path = "postgres://{}:{}@{}/{}".format(
-#   user_name,
-#   password,
-#   'localhost:5432',
-#   database_name)
-database_path = os.environ['DATABASE_URL']
+user_name = "anaborba"
+password = "012300a"
+database_path = "postgres://{}:{}@{}/{}".format(
+  user_name,
+  password,
+  'localhost:5432',
+  database_name)
+# database_path = os.environ['DATABASE_URL']
 db = SQLAlchemy()
 
 def setup_db(app, database_path=database_path):
@@ -27,31 +27,18 @@ def setup_db(app, database_path=database_path):
 
     migrate = Migrate(app, db)
 
-acting_in = db.Table(
-  'acting_in',
-  db.Column('actor_id', db.Integer,
-            db.ForeignKey('Actors.id'), primary_key=True),
-  db.Column('movie_id', db.Integer,
-            db.ForeignKey('Movies.id'), primary_key=True))
-
 class Actors(db.Model):
-    __tablename__ = 'Actors'
+    __tablename__ = 'actor'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(20), nullable=False)
+    age = Column(Integer, nullable=False)
+    gender = Column(String(10), nullable=False)
+    movie = db.relationship("Movies", back_populates="actor")
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    age = db.Column(db.Integer)
-    email = db.Column(db.String)
-    salary = db.Column(db.Integer)
-    movies = db.relationship(
-      'Movies',
-      secondary=acting_in,
-      backref=db.backref('Actors', lazy=True))
-
-    def __init__(self, name, age, email, salary):
-        self.age = age
-        self.email = email
+    def __init__(self, name, age, gender):
         self.name = name
-        self.salary = salary
+        self.age = age
+        self.gender = gender
 
     def insert(self):
         db.session.add(self)
@@ -66,26 +53,26 @@ class Actors(db.Model):
 
     def format(self):
         return {
-          'id': self.id,
-          'name': self.name,
-          'age': self.age,
-          'email': self.email,
-          'salary': self.salary,
-          'movies': [x.name for x in self.movies]
+            'id': self.id,
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender,
         }
 
 class Movies(db.Model):
-    __tablename__ = 'Movies'
+    __tablename__ = 'movie'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    length = db.Column(db.Float)
-    genre = db.Column(db.String)
+    id = Column(Integer, primary_key=True)
+    title = Column(String(20), nullable=False)
+    releaseDate = Column(db.DateTime(timezone=False), nullable=False)
+    actor_id = Column(Integer, db.ForeignKey('actor.id'))
+    actor = db.relationship("Actors", back_populates="movie")
 
-    def __init__(self, length, genre, name):
-        self.length = length
-        self.genre = genre
-        self.name = name
+    def __init__(self, title, releaseDate, actor_id):
+        self.title = title
+        self.releaseDate = releaseDate
+        self.actor_id = actor_id
+
 
     def insert(self):
         db.session.add(self)
@@ -97,3 +84,11 @@ class Movies(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    def format(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'release date': self.releaseDate.strftime('%c'),
+            'actor_id': self.actor_id,
+        }
