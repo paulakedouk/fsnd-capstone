@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, abort, jsonify, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from models import setup_db, Actors, Movies
+from models import setup_db, Movies
 from auth import AuthError, requires_auth
 
 def create_app(test_config=None):
@@ -30,8 +30,7 @@ def create_app(test_config=None):
 
     @app.route('/logged-in')
     def loggedin():
-        return render_template('logged-in.html', movies=Movies.query.all(), actors=Actors.query.all())
-
+        return render_template('logged-in.html', movies=Movies.query.all())
 
     # Actors
 
@@ -79,27 +78,30 @@ def create_app(test_config=None):
         }
         return jsonify(result)
 
-    @app.route('/movies', methods=['POST'])
-    @requires_auth('post:movies')
-    def add_movie(payload):
-        new_title = request.get_json()['title']
-        print(new_title)
-        new_release_date = request.get_json()['releaseDate']
+    # @app.route('/movies', methods=['POST'])
+    # @requires_auth('post:movies')
+    # def add_movie(payload):
+        # new_title = request.get_json()['title']
+        # new_release_date = request.get_json()['releaseDate']
+        
+        # try:
+        #     new_movie = Movies(
+        #         title = req_data['title'],
+        #         releaseDate = req_data['releaseDate']
+        #     )
+        #     new_movie.insert()
 
-        try:
-            new_movie = Movies(title=new_title, releaseDate=new_release_date)
-            new_movie.insert()
-
-            selection = Movies.query.filter(Movies.title == new_title).first()
-            return jsonify({
-                'id': selection.id,
-                'title': selection.title,
-                'releaseDate': selection.releaseDate,
-                'success': True
-            }), 200
-
-        except Exception:
-                abort(422)       
+        #     selection = Movies.query.filter(Movies.title == new_title).first()
+        #     return jsonify({
+        #         'id': selection.id,
+        #         'title': selection.title,
+        #         'releaseDate': selection.releaseDate,
+        #         'success': True
+        #     }), 200
+       
+        # except Exception as e:
+        #     print('we couldnt create the object. Reason :', e)
+        #     abort(500)
 
 
 
