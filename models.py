@@ -6,15 +6,16 @@ from datetime import datetime, time as time_
 import json
 from flask_migrate import Migrate
 
-database_name = "capstone"
-user_name = "anaborba"
-password = "012300a"
-database_path = "postgres://{}:{}@{}/{}".format(
-  user_name,
-  password,
-  'localhost:5432',
-  database_name)
+# database_name = "capstone"
+# user_name = "anaborba"
+# password = "012300a"
+# database_path = "postgres://{}:{}@{}/{}".format(
+#   user_name,
+#   password,
+#   'localhost:5432',
+#   database_name)
 
+database_path = os.environ['DATABASE_URL']
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
 db = SQLAlchemy()
 
@@ -24,7 +25,7 @@ def setup_db(app, database_path=database_path):
     
     db.app = app
     db.init_app(app)
-    db.create_all()
+    # db.create_all()
 
     migrate = Migrate(app, db)
 
