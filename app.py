@@ -71,6 +71,7 @@ def create_app(test_config=None):
         This endpoint is responsible for returning all Movies from DB
         '''
         movies = Movies.query.all()
+        print(movies)
         mov_format = [mov.format() for mov in movies]
 
         result = {
