@@ -30,7 +30,8 @@ def create_app(test_config=None):
 
     @app.route('/logged-in')
     def loggedin():
-        return render_template('logged-in.html', movies=Movies.query.all())
+        return render_template('logged-in.html', movies=Movies.query.all(), actors=Actors.query.all())
+
 
     # Actors
 
@@ -81,27 +82,41 @@ def create_app(test_config=None):
     @app.route('/movies', methods=['POST'])
     @requires_auth('post:movies')
     def add_movie(payload):
-        new_title = request.get_json()['title']
-        new_release_date = request.get_json()['releaseDate']
         
+
+
+
+
+        res = request.get_json()
+        
+        movies = []
+        if not res:
+            abort(400)
+
         try:
-            new_movie = Movies(
-                title = req_data['title'],
-                releaseDate = req_data['releaseDate']
-            )
+            new_movie = Movie(
+                title=res['title'], 
+                releaseDate=datetime.datetime.strptime(res['releaseDate'], '%a, %d %b %Y %H:%M:%S %Z') )
+
+            movies.append(new_movie.format())
             new_movie.insert()
 
-            selection = Movies.query.filter(Movies.title == new_title).first()
+            selection = Movies.query.filter(movie.title == new_title).first()
             return jsonify({
                 'id': selection.id,
                 'title': selection.title,
-                'releaseDate': selection.releaseDate,
+                'releaseDate': selection.release_date,
                 'success': True
             }), 200
-       
+        
         except Exception as e:
             print('we couldnt create the object. Reason :', e)
             abort(500)
+
+        return jsonify({
+            'status': True,
+            'movie': movies
+        })
 
 
 
