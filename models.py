@@ -15,16 +15,16 @@ database_path = "postgres://{}:{}@{}/{}".format(
   'localhost:5432',
   database_name)
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
+# SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
 db = SQLAlchemy()
 
-def setup_db(app):
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('DATABASE_URL')
+def setup_db(app, database_path=database_path):
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
     db.app = app
     db.init_app(app)
-    # db.create_all()
+    db.create_all()
 
     migrate = Migrate(app, db)
 
