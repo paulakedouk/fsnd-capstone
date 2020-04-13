@@ -6,15 +6,17 @@ from datetime import datetime, time as time_
 import json
 from flask_migrate import Migrate
 
-# database_name = "capstone"
-# user_name = "anaborba"
-# password = "012300a"
-# database_path = "postgres://{}:{}@{}/{}".format(
-#   user_name,
-#   password,
-#   'localhost:5432',
-#   database_name)
-database_path = os.environ['DATABASE_URL']
+database_name = "capstone"
+user_name = "anaborba"
+password = "012300a"
+database_path = "postgres://{}:{}@{}/{}".format(
+  user_name,
+  password,
+  'localhost:5432',
+  database_name)
+
+# os.environ['DATABASE_URL'] = 'postgres://heoxxydraglsmt:78b7fe5638a8b28c7a5e2e68568348f8b83ccb2003c5420d78535da083f82943@ec2-54-157-78-113.compute-1.amazonaws.com:5432/d7cu2pq6vjbrnc'
+# database_path = os.environ['DATABASE_URL']
 db = SQLAlchemy()
 
 def setup_db(app, database_path=database_path):
@@ -23,7 +25,7 @@ def setup_db(app, database_path=database_path):
     
     db.app = app
     db.init_app(app)
-    # db.create_all()
+    db.create_all()
 
     migrate = Migrate(app, db)
 
@@ -33,7 +35,7 @@ class Actors(db.Model):
     name = Column(String(20), nullable=False)
     age = Column(Integer, nullable=False)
     gender = Column(String(10), nullable=False)
-    movie = db.relationship("Movies", back_populates="actor")
+    # movie = db.relationship("Movies", backref=db.backref('actor', lazy=True))
 
     def __init__(self, name, age, gender):
         self.name = name
@@ -65,14 +67,10 @@ class Movies(db.Model):
     id = Column(Integer, primary_key=True)
     title = db.Column(db.String(120), unique=True, nullable=False)
     releaseDate = Column(db.DateTime(timezone=False), nullable=False)
-    actor_id = Column(Integer, db.ForeignKey('actor.id'))
-    actor = db.relationship("Actors", back_populates="movie")
 
     def __init__(self, title, releaseDate, actor_id):
         self.title = title
         self.releaseDate = releaseDate
-        self.actor_id = actor_id
-
 
     def insert(self):
         db.session.add(self)
@@ -90,5 +88,4 @@ class Movies(db.Model):
             'id': self.id,
             'title': self.title,
             'releaseDate': self.releaseDate.strftime('%c'),
-            # 'actor_id': self.actor_id,
         }
