@@ -15,7 +15,6 @@ from flask_migrate import Migrate
 #   'localhost:5432',
 #   database_name)
 
-os.environ['DATABASE_URL'] = 'postgres://heoxxydraglsmt:78b7fe5638a8b28c7a5e2e68568348f8b83ccb2003c5420d78535da083f82943@ec2-54-157-78-113.compute-1.amazonaws.com:5432/d7cu2pq6vjbrnc'
 database_path = os.environ['DATABASE_URL']
 db = SQLAlchemy()
 
