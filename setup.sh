@@ -6,4 +6,3 @@ export CLIENT_ID='EHUF6nr6QpYJSMYO9BQFjl4yqTsQjZ2m'
 
 export FLASK_APP=app.py
 export FLASK_DEBUG=true
-flask run --reload

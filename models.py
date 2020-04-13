@@ -1,5 +1,7 @@
 
 import os
+import click
+from flask.cli import with_appcontext
 from sqlalchemy import Column, String, Integer, Float, create_engine
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, time as time_
@@ -25,9 +27,14 @@ def setup_db(app, database_path=database_path):
     
     db.app = app
     db.init_app(app)
-    db.create_all()
+    # db.create_all()
 
     migrate = Migrate(app, db)
+
+@click.command(name='create-tables')
+@with_appcontext
+def create_tables():
+    db.create_all()
 
 class Actors(db.Model):
     __tablename__ = 'actor'
