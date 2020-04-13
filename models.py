@@ -18,23 +18,23 @@ from flask_migrate import Migrate
 #   database_name)
 
 database_path = os.environ['DATABASE_URL']
-# SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
 db = SQLAlchemy()
 
 def setup_db(app, database_path=database_path):
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
     db.app = app
     db.init_app(app)
     # db.create_all()
 
+    @click.command(name='create-tables')
+    @with_appcontext
+    def create_tables():
+        db.create_all()
+
     migrate = Migrate(app, db)
 
-@click.command(name='create-tables')
-@with_appcontext
-def create_tables():
-    db.create_all()
 
 class Actors(db.Model):
     __tablename__ = 'actor'
