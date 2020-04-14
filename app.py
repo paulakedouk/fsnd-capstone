@@ -83,36 +83,21 @@ def create_app(test_config=None):
     @app.route('/movies', methods=['POST'])
     @requires_auth('post:movies')
     def add_movie(payload):
-        res = request.get_json()
-        
-        movies = []
-        if not res:
+        data = request.get_json()
+        if not data:
             abort(400)
 
-        try:
-            new_movie = Movie(
-                title=res['title'], 
-                release_date=datetime.datetime.strptime(res['release_date'], '%a, %d %b %Y %H:%M:%S %Z') )
-
-            movies.append(new_movie.format())
-            new_movie.insert()
-
-            selection = Movies.query.filter(movie.title == new_title).first()
-            return jsonify({
-                'id': selection.id,
-                'title': selection.title,
-                'release_date': selection.release_date,
-                'success': True
-            }), 200
+        new_title = data.get("title")
+        new_release_date = data.get("release_date")
         
-        except Exception as e:
-            print('we couldnt create the object. Reason :', e)
-            abort(500)
+        new_movie = movies(title=new_title, release_date=new_release_date)
 
-        return jsonify({
-            'status': True,
-            'movie': movies
-        })
+        try:
+            new_movie.insert()
+        except Exception:
+            abort(401)
+
+        return jsonify({"success": True, "movie": new_movie})
 
 
 
@@ -184,7 +169,7 @@ def create_app(test_config=None):
 
     return app
 
-app = create_app()
+APP = create_app()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    APP.run(host='0.0.0.0', port=8080, debug=True)
