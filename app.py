@@ -52,14 +52,12 @@ def create_app(test_config=None):
     @requires_auth(permission='delete:actors')
     def delete_actor(payload, id):
         try:
-            actor = Actors.query.filter(Actors.id == id).one_or_none()
-            actor.delete()
-
-            return jsonify({
-                'success': True
-            })
+            Actors.query.filter_by(id=id).delete()
+            # actor = Actors.query.filter_by(id=id)
+            # actor.delete()
         except Exception:
             abort(422)
+        return jsonify({ 'success': True })
 
     
     @app.route('/actors/<int:id>', methods=['PATCH'])

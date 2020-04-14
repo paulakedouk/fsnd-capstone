@@ -24,12 +24,25 @@
         
         ul {
             padding-left: 0;
+            list-style: none;
+            width: 250px;
         }
         ol {
             list-style-type: circle;
         }
         .hidden {
             display: none;
+        }
+        li{
+            clear: both;
+        }
+        li button {
+            -webkit-appearance: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            float: right;
+            color: red;
         }
     </style>
 </head>
@@ -55,7 +68,10 @@
                 <li>Actors</li>
                     <ol id="actors">
                         {% for actor in actors %}
-                        <li>{{ actor.name }}</li>
+                        <li data-id="{{ actor.id }}">{{ actor.name }}
+                            <button class="delete-button" data-id="{{ actor.id }}">&cross;</button>
+                        </li>
+                        
                         {% endfor %}
                     </ol>
 				<li>Assignments</li>
@@ -87,7 +103,20 @@
             .catch(function() {
                 document.getElementById('error').className = '';
             })
+
+            const deleteBtns = document.querySelectorAll('.delete-button');
+            for (let i = 0; i < deleteBtns.length; i++) {
+                const btn = deleteBtns[i];
+                btn.onclick = function(e) {
+                    const actorId = e.target.dataset['id'];
+                    fetch('/actors/' + actorId, {
+                        method: 'DELETE'
+                    });
+                }
+            }
         }
+
+
     </script>
 </body>
 </html>
