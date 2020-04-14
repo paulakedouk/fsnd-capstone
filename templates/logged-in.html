@@ -108,6 +108,7 @@
             for (let i = 0; i < deleteBtns.length; i++) {
                 const btn = deleteBtns[i];
                 btn.onclick = function(e) {
+                    print(clicked)
                     const actorId = e.target.dataset['id'];
                     fetch('/actors/' + actorId, {
                         method: 'DELETE'
