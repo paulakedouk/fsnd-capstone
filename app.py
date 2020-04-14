@@ -83,11 +83,6 @@ def create_app(test_config=None):
     @app.route('/movies', methods=['POST'])
     @requires_auth('post:movies')
     def add_movie(payload):
-        
-
-
-
-
         res = request.get_json()
         
         movies = []
@@ -97,7 +92,7 @@ def create_app(test_config=None):
         try:
             new_movie = Movie(
                 title=res['title'], 
-                releaseDate=datetime.datetime.strptime(res['releaseDate'], '%a, %d %b %Y %H:%M:%S %Z') )
+                release_date=datetime.datetime.strptime(res['release_date'], '%a, %d %b %Y %H:%M:%S %Z') )
 
             movies.append(new_movie.format())
             new_movie.insert()
@@ -106,7 +101,7 @@ def create_app(test_config=None):
             return jsonify({
                 'id': selection.id,
                 'title': selection.title,
-                'releaseDate': selection.release_date,
+                'release_date': selection.release_date,
                 'success': True
             }), 200
         

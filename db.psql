@@ -63,7 +63,7 @@ ALTER SEQUENCE public.actor_id_seq OWNED BY public.actor.id;
 CREATE TABLE public.movie (
     id integer NOT NULL,
     title character varying(50) NOT NULL,
-    "releaseDate" timestamp without time zone NOT NULL,
+    "release_date" timestamp without time zone NOT NULL,
     actor_id integer
 );
 
@@ -122,7 +122,7 @@ COPY public.actor (id, name, age, gender) FROM stdin;
 -- Data for Name: movie; Type: TABLE DATA; Schema: public; Owner: anaborba
 --
 
-COPY public.movie (id, title, "releaseDate", actor_id) FROM stdin;
+COPY public.movie (id, title, "release_date", actor_id) FROM stdin;
 1	Frozen	2016-03-25 11:55:11.271041	2
 2	Jumanji	2020-03-25 11:55:11.271041	1
 4	Fronzen2	2019-03-25 11:55:11.271041	1

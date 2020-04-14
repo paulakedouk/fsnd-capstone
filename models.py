@@ -73,11 +73,11 @@ class Movies(db.Model):
 
     id = Column(Integer, primary_key=True)
     title = db.Column(db.String(120), unique=True, nullable=False)
-    releaseDate = Column(db.DateTime(timezone=False), nullable=False)
+    release_date = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, title, releaseDate, actor_id):
+    def __init__(self, title, release_date, actor_id):
         self.title = title
-        self.releaseDate = releaseDate
+        self.release_date = release_date
 
     def insert(self):
         db.session.add(self)
@@ -94,5 +94,5 @@ class Movies(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'releaseDate': self.releaseDate.strftime('%c'),
+            'release_date': self.release_date
         }
