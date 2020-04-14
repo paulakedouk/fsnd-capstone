@@ -59,10 +59,11 @@
                         {% endfor %}
                     </ol>
                     <div id="error" class="hidden">Something went wrong!</div>
-                    <form method="post" action="/movies">
+                    <form id="form" method="post" action="/movies">
                         <p>Add new Movie</p>
                         <input type="text" name="title" id="title"/>
                         <input type="text" name="release_date" id="release_date" />
+                        <input type="text" name="actor_id" id="actor_id" />
                         <input type="submit" value="Add">
                     </form>
                 <li>Actors</li>
@@ -82,44 +83,41 @@
     <script>
         document.getElementById('form').onsubmit = function(e) {
             e.preventDefault();
+            
             fetch('/movies', {
                 method: 'POST',
                 body: JSON.stringify({
-                    'title': document.getElementById('title').value
+                    'title': document.getElementById('title').value,
+                    'release_date': document.getElementById('release_date').value,
+                    'actor_id': document.getElementById('actor_id').value,
                 }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(jsonResponse) {
-                console.log(jsonResponse);
-                const liItem = document.createElement('LI');
-                liItem.innerHTML = jsonResponse['title'];
-                document.getElementById('movies').appendChild(liItem)
-            })
+            .then(response => response.json())
+
+            
             .catch(function() {
                 document.getElementById('error').className = '';
             })
         }
-        
-        const deleteBtns = document.querySelectorAll('.delete-button');
-        for (let i = 0; i < deleteBtns.length; i++) {
-            const btn = deleteBtns[i];
-            btn.onclick = function(e) {
-                print(clicked)
-                const actorId = e.target.dataset['id'];
-                fetch('/actors/' + actorId, {
-                    method: 'DELETE'
-                })
-                .then(function() {
-                    const item = e.target.parentElement;
-                    item.remove();
-                })
-            }
-        }
+
+        // const deleteBtns = document.querySelectorAll('.delete-button');
+        // for (let i = 0; i < deleteBtns.length; i++) {
+        //     const btn = deleteBtns[i];
+        //     btn.onclick = function(e) {
+        //         print(clicked)
+        //         const actorId = e.target.dataset['id'];
+        //         fetch('/actors/' + actorId, {
+        //             method: 'DELETE'
+        //         })
+        //         .then(function() {
+        //             const item = e.target.parentElement;
+        //             item.remove();
+        //         })
+        //     }
+        // }
 
 
     </script>
