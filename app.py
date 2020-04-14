@@ -104,44 +104,46 @@ def create_app(test_config=None):
 
     # Movies
     
-    @app.route('/movies', methods=['GET', 'POST'])
+    @app.route('/movies', methods=['GET'])
+    @requires_auth(permission='get:movies')
+    def get_Movies(payload):
+        '''
+        This endpoint is responsible for returning all Movies from DB
+        '''
+        movies = Movies.query.all()
+        # print(movies)
+        mov_format = [mov.format() for mov in movies]
+
+        result = {
+            "success": True,
+            "movies": mov_format
+        }
+        return jsonify(result)
+
+    @app.route('/movies', methods=['POST'])
     @requires_auth('post:movies')
-    def movies():
-        if request.method == "GET":
-            movies = Movies.query.all()
-            
-            mov_format = [mov.format() for mov in movies]
+    def new_movie(payload):
+        try:
+            title = request.args.get("title")
+            print(title)
+            release_date = request.args.get("release_date")
+            actor_id = request.args.get("actor_id")
 
-            result = {
-                "success": True,
-                "movies": mov_format
-            }
+            new_movie = Movies(title=title, release_date=release_date, actor_id=actor_id)
+            new_movie.insert()
+        except DatabaseError:
+            db.session.rollback()
+            abort(422)
+        finally:
+            db.session.close()
+            return jsonify({
+                'title': title,
+                'release_date': release_date
+            })
 
-            return jsonify(result)
-
-        if request.method == "POST":
-            try:
-                title = request.args.get("title")
-                print(title)
-                release_date = request.args.get("release_date")
-                actor_id = request.args.get("actor_id")
-
-                new_movie = Movies(title=title, release_date=release_date, actor_id=actor_id)
-                new_movie.insert()
-            except DatabaseError:
-                db.session.rollback()
-                abort(422)
-            finally:
-                db.session.close()
-                return jsonify({
-                    'title': title,
-                    'release_date': release_date
-                })
-
-    @app.route('/movies/<int:id>', methods=["PATCH", "DELETE"])
+    @app.route('/movies/<int:id>', methods=["DELETE"])
     @requires_auth('delete:movies')
-    def update_movie(id):
-        if request.method == "DELETE":
+    def delete_movie(payload, id):
             selection_id = Movies.query.get(id)
 
             if not selection_id:
@@ -159,24 +161,26 @@ def create_app(test_config=None):
             except Exception:
                 abort(422)
 
-        
-        if request.method == "PATCH":
-            try:
-                movie = Movies.query.filter_by(id=id).first()
-                
-                uptated_title = request.args.get("title")
-                uptated_release_date = request.args.get("release_date")
-                uptated_actor_id = request.args.get("actor_id")
-
-                uptaded_movie = Movies(title=uptated_title, release_date=uptated_release_date, actor_id=uptated_actor_id)
-                uptaded_movie.update()
-
-                return jsonify({
-                    'code': 'success'
-                })
+    @app.route('/movies/<int:id>', methods=["PATCH"])
+    @requires_auth('patch:movies')
+    def update_movie(payload, id):
+    
+        try:
+            movie = Movies.query.filter_by(id=id).first()
             
-            except Exception:
-                abort(422)
+            uptated_title = request.args.get("title")
+            uptated_release_date = request.args.get("release_date")
+            uptated_actor_id = request.args.get("actor_id")
+
+            uptaded_movie = Movies(title=uptated_title, release_date=uptated_release_date, actor_id=uptated_actor_id)
+            uptaded_movie.update()
+
+            return jsonify({
+                'code': 'success'
+            })
+        
+        except Exception:
+            abort(422)
     
 
     # Error Handlers
