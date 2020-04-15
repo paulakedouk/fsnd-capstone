@@ -110,14 +110,14 @@
                     'actor_id': document.getElementById('actor_id').value,
                 }),
                 headers: {
-                    'Authorization': 'Bearer <token>'
+                    'Content-Type': 'application/json'
                 }
             })
             .then(function(response) {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                console.log(jsonResponse)
+                // console.log(jsonResponse)
                 const newMovie = document.createElement('li');
                 const btn = document.createElement('button');
 
