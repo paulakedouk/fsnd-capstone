@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import db, setup_db, Actors, Movies
 import datetime
-# from auth import AuthError, requires_auth
+from auth import AuthError, requires_auth
 
 def create_app(test_config=None):
     # create and configure the app
@@ -23,12 +23,6 @@ def create_app(test_config=None):
                              'GET, PATCH, POST, DELETE, OPTIONS')
         return response
 
-    # @app.route('/')
-    # def index():
-    #     message = "Welcome to Udacity Capstone Project"
-    #     return message
-
-    # Working with frontend
     @app.route('/')
     def index():
         return render_template('login.html')
@@ -40,8 +34,8 @@ def create_app(test_config=None):
     # Actors
     
     @app.route('/actors', methods=['GET'])
-    # @requires_auth('get:actors')
-    def get_actors():
+    @requires_auth('get:actors')
+    def get_actors(payload):
         actors = Actors.query.all()
 
         act_format = [act.format() for act in actors]
@@ -53,8 +47,8 @@ def create_app(test_config=None):
         return jsonify(result)
 
     @app.route('/actors', methods=['POST'])
-    # @requires_auth('post:actors')
-    def new_actor():
+    @requires_auth('post:actors')
+    def new_actor(payload):
         try:
             name = request.args.get("name")
             age = request.args.get("age")
@@ -74,8 +68,8 @@ def create_app(test_config=None):
             })
     
     @app.route('/actors/<int:id>', methods=['DELETE'])
-    # @requires_auth('delete:actors')
-    def delete_actor(id):
+    @requires_auth('delete:actors')
+    def delete_actor(payload, id):
         selection_id = Actors.query.get(id)
         if not selection_id:
                 abort(404)
@@ -93,8 +87,8 @@ def create_app(test_config=None):
                 abort(422)
 
     @app.route('/actors/<int:id>', methods=["PATCH"])
-    # @requires_auth('patch:actors')
-    def update_actor( id):
+    @requires_auth('patch:actors')
+    def update_actor(payload, id):
         try:
             actor = Actors.query.filter_by(id=id).first()
             
@@ -116,8 +110,8 @@ def create_app(test_config=None):
     # Movies
     
     @app.route('/movies', methods=['GET'])
-    # @requires_auth('get:movies')
-    def get_movies():
+    @requires_auth('get:movies')
+    def get_movies(payload):
         '''
         This endpoint is responsible for returning all Movies from DB
         '''
@@ -132,8 +126,8 @@ def create_app(test_config=None):
         return jsonify(result)
 
     @app.route('/movies', methods=['POST'])
-    # @requires_auth('post:movies')
-    def new_movie():
+    @requires_auth('post:movies')
+    def new_movie(payload):
         title = request.get_json()['title']
         release_date = request.get_json()['release_date']
         actor_id = request.get_json()['actor_id']
@@ -148,8 +142,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies/<int:id>', methods=["DELETE"])
-    # @requires_auth('delete:movies')
-    def delete_movie(id):
+    @requires_auth('delete:movies')
+    def delete_movie(payload, id):
         selection_id = Movies.query.get(id)
 
         if not selection_id:
@@ -168,8 +162,8 @@ def create_app(test_config=None):
             abort(422)
 
     @app.route('/movies/<int:id>', methods=["PATCH"])
-    # @requires_auth('patch:movies')
-    def update_movie( id):
+    @requires_auth('patch:movies')
+    def update_movie(payload, id):
     
         try:
             movie = Movies.query.filter_by(id=id).first()
@@ -247,13 +241,13 @@ def create_app(test_config=None):
             "message": "Forbidden"
         }), 403
 
-    # @app.errorhandler(AuthError)
-    # def auth_error(error):
-    #     return jsonify({
-    #         "success": False,
-    #         "error": error.status_code,
-    #         "message": error.error
-    #     }), error.status_code
+    @app.errorhandler(AuthError)
+    def auth_error(error):
+        return jsonify({
+            "success": False,
+            "error": error.status_code,
+            "message": error.error
+        }), error.status_code
 
     return app
 

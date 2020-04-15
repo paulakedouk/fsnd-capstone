@@ -10,15 +10,15 @@ import datetime
 class CapstoneTestCase(unittest.TestCase):
     def setUp(self):
         """Define test variables and initialize app."""
-        self.assistent_token = os.environ['assistent_token']
-        self.director_token = os.environ['director_token']
-        self.producer_token = os.environ['producer_token']
+        self.token_assistant = os.environ['assistant_token']
+        self.token_director = os.environ['director_token']
+        self.token_producer = os.environ['producer_token']
 
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "capstone_test"
-        self.user_name = "postgres"
-        self.password = "postgres"
+        self.user_name = "anaborba"
+        self.password = "012300a"
         self.database_path = "postgresql://{}:{}@{}/{}".format(
             self.user_name,
             self.password,
@@ -35,11 +35,18 @@ class CapstoneTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-    def test_Unauthorized_Permission_NO_HEADERS_get_Actors(self):
+    def test_Unauthorized_Permission(self):
         res = self.client().get('/actors')
         body = json.loads(res.data)
         self.assertEqual(res.status_code, 401)
         self.assertEqual(body['success'], False)
+
+    def test_get_actors(self):
+        res = self.client().get('/actors', headers={
+            "Authorization": 'bearer '+self.token_assistant})
+        body = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(body['success'], True)
 
 if __name__ == "__main__":
     unittest.main()
