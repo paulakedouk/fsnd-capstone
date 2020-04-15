@@ -23,18 +23,18 @@ def create_app(test_config=None):
                              'GET, PATCH, POST, DELETE, OPTIONS')
         return response
 
-    @app.route('/')
-    def index():
-        message = "Welcome to Udacity Capstone Project"
-        return message
-
-    # Working with frontend
     # @app.route('/')
     # def index():
-    #     return render_template('login.html')
-    # @app.route('/logged-in')
-    # def loggedin():
-    #     return render_template('logged-in.html', movies=Movies.query.all(), actors=Actors.query.all())
+    #     message = "Welcome to Udacity Capstone Project"
+    #     return message
+
+    # Working with frontend
+    @app.route('/')
+    def index():
+        return render_template('login.html')
+    @app.route('/logged-in')
+    def loggedin():
+        return render_template('logged-in.html', movies=Movies.query.all(), actors=Actors.query.all())
 
 
     # Actors
@@ -112,49 +112,7 @@ def create_app(test_config=None):
         except Exception:
             abort(422)
 
-    # @app.route('/actors/<int:id>', methods=['PATCH'])
-    # # @requires_auth(permission='patch:actors')
-    # def edit_actor(payload, id):
-        # try:
-        #     actor = Actors.query.filter(Actors.id == id).one_or_none()
-            
-        #     if actor is None:
-        #         abort(404)
-
-        #     body = request.get_json()
-        #     if 'name' in body:
-        #         actor.name = body.get("name")
-        #     if 'age' in body:
-        #         actor.age = body['age']
-        #     if 'gender' in body:
-        #         actor.gender = body['gender']
-        
-        #     actor.update()
-            
-        #     return jsonify({
-        #         'success': True,
-        #     })
-
-        # except Exception:
-        #     abort(422)
-        # try:
-        #     actor = Actors.query.filter(Actors.id == id).first()
-            
-        #     print(actor.name)
-        #     actor.name = request.args.get("name")
-        #     print(actor.name)
-        #     actor.age = request.args.get("age")
-        #     actor.gender = request.args.get("gender")
-        #     actor.update()
-
-        #     return jsonify({
-        #         'code': 'success'
-        #     })
-
-        # except:
-        #     print("database error")
-        #     abort(422)
-
+    
     # Movies
     
     @app.route('/movies', methods=['GET'])
