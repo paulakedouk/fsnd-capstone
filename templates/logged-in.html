@@ -54,11 +54,13 @@
     <div class="container">
         <h1>Udacity Casting Agency Capstone Project</h1>
         
-        <ul class="list-group">
-            <p class="list-group-item active">Movies</p>
+        <ul class="list-group" id="movie-list">
+            <p class="list-group-item active" id="movie">Movies</p>
             
             {% for movie in movies %}
-            <li class="list-group-item" id="movies">{{ movie.title }}</li>
+            <li class="list-group-item" data-id="{{ movie.id }}" id="movie-list">{{ movie.title }}
+                <button class="delete-movie" data-id="{{ movie.id }}">&cross;</button>
+            </li>
             {% endfor %}
                 
             <div id="error" class="hidden">Something went wrong!</div>
@@ -68,8 +70,9 @@
             <p class="list-group-item active">Actors</p>
             
             {% for actor in actors %}
-            <li class="list-group-item" data-id="{{ actor.id }}" id="actor">{{ actor.name }}
-                <button class="delete-button" data-id="{{ actor.id }}">&cross;</button>
+            <li class="list-group-item" data-id="{{ actor.id }}" id="actor-list">
+                {{ actor.name }}
+                <button class="delete-actor" data-id="{{ actor.id }}">&cross;</button>
             </li>
             {% endfor %}
         </ul>
@@ -109,33 +112,70 @@
                 }),
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                credentials: "same-origin"
+                }
             })
-            .then(response => response.json())
-            
-            .then(function() {
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                console.log(jsonResponse)
+                const newMovie = document.createElement('li');
+                const btn = document.createElement('button');
+
+                newMovie.innerHTML = jsonResponse['title'];
+                btn.innerHTML = '&cross;';
+                addDeleteMovie(btn);
+
+                newMovie.appendChild(btn);
+                    
+                newMovie.classList.add('list-group-item');
+                
+                document.getElementById('movie-list').appendChild(newMovie);
                 document.getElementById('error').className = 'hidden';
-            })    
+
+            })
+            .catch(function() {
+                document.getElementById('error').className = '';
+            })
         }
 
-        // const deleteBtns = document.querySelectorAll('.delete-button');
-        // for (let i = 0; i < deleteBtns.length; i++) {
-        //     const btn = deleteBtns[i];
-        //     btn.onclick = function(e) {
-        //         print(clicked)
-        //         const actorId = e.target.dataset['id'];
-        //         fetch('/actors/' + actorId, {
-        //             method: 'DELETE'
-        //         })
-        //         .then(function() {
-        //             const item = e.target.parentElement;
-        //             item.remove();
-        //         })
-        //     }
-        // }
+        function addDeleteMovie(btn) {
+            btn.onclick = function(e) {
+                const movieId = e.target.dataset['id'];
+                fetch('/movies/' + movieId, {
+                    method: 'DELETE'
+                })
+                .then(function() {
+                    const item = e.target.parentElement;
+                    item.remove();
+                })
+            }
+        }
 
+        function addDeleteActor(btn) {
+            btn.onclick = function(e) {
+                const actorId = e.target.dataset['id'];
+                fetch('/actors/' + actorId, {
+                    method: 'DELETE'
+                })
+                .then(function() {
+                    const item = e.target.parentElement;
+                    item.remove();
+                })
+            }
+        }
 
+        const deleteMovie= document.querySelectorAll('.delete-movie');
+        for (let i = 0; i < deleteMovie.length; i++) {
+            const btn = deleteMovie[i];
+            addDeleteMovie(btn);
+        }
+        
+        const deleteActor = document.querySelectorAll('.delete-actor');
+        for (let i = 0; i < deleteActor.length; i++) {
+            const btn = deleteActor[i];
+            addDeleteActor(btn);
+        }
     </script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
