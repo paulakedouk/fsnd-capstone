@@ -8,16 +8,16 @@ from datetime import datetime, time as time_
 import json
 from flask_migrate import Migrate
 
-# database_name = "capstone"
-# user_name = "anaborba"
-# password = "012300a"
-# database_path = "postgres://{}:{}@{}/{}".format(
-#   user_name,
-#   password,
-#   'localhost:5432',
-#   database_name)
+database_name = "capstone"
+user_name = "anaborba"
+password = "012300a"
+database_path = "postgres://{}:{}@{}/{}".format(
+  user_name,
+  password,
+  'localhost:5432',
+  database_name)
 
-database_path = os.environ['DATABASE_URL']
+# database_path = os.environ['DATABASE_URL']
 db = SQLAlchemy()
 
 def setup_db(app, database_path=database_path):

@@ -25,17 +25,22 @@ def create_app(test_config=None):
 
     @app.route('/')
     def index():
-        return render_template('login.html')
+        message = "Welcome to Udacity Capstone Project"
+        return message
 
-    @app.route('/logged-in')
-    def loggedin():
-        return render_template('logged-in.html', movies=Movies.query.all(), actors=Actors.query.all())
+    # Working with frontend
+    # @app.route('/')
+    # def index():
+    #     return render_template('login.html')
+    # @app.route('/logged-in')
+    # def loggedin():
+    #     return render_template('logged-in.html', movies=Movies.query.all(), actors=Actors.query.all())
 
 
     # Actors
     
     @app.route('/actors', methods=['GET'])
-    @requires_auth(permission='get:actors')
+    @requires_auth('get:actors')
     def get_actors(payload):
         actors = Actors.query.all()
 
@@ -47,18 +52,66 @@ def create_app(test_config=None):
         }
         return jsonify(result)
 
-    # @app.route('/actors/<int:actor_id>', methods=['DELETE'])
-    # # @requires_auth(permission='delete:actors')
-    # def delete_actor(payload, id):
-    #     try:
-    #         Actors.query.filter_by(id=actor_id).delete()
-    #         # actor = Actors.query.filter_by(id=id)
-    #         # actor.delete()
-    #     except Exception:
-    #         abort(422)
-    #     return jsonify({ 'success': True })
+    @app.route('/actors', methods=['POST'])
+    @requires_auth('post:actors')
+    def new_actor(payload):
+        try:
+            name = request.args.get("name")
+            age = request.args.get("age")
+            gender = request.args.get("gender")
 
+            new_actor = Actors(name=name, age=age, gender=gender)
+            new_actor.insert()
+        except:
+            abort(422)
+
+        finally:
+            db.session.close()
+            return jsonify({
+                'name': name,
+                'age': age,
+                'gender': gender
+            })
     
+    @app.route('/actors/<int:id>', methods=['DELETE'])
+    @requires_auth('delete:actors')
+    def delete_actor(id):
+        selection_id = Actors.query.get(id)
+        if not selection_id:
+                abort(404)
+
+        try:
+            selection = Actors.query.filter(Actors.name == selection_id.name).all()
+            for actor in selection:
+                actor.delete()
+            return jsonify({
+                'status': True,
+                'actor': selection_id.name
+            })
+
+        except Exception:
+                abort(422)
+
+    @app.route('/actors/<int:id>', methods=["PATCH"])
+    @requires_auth('patch:actors')
+    def update_actor(payload, id):
+        try:
+            actor = Actors.query.filter_by(id=id).first()
+            
+            uptated_name = request.args.get("name")
+            uptated_age = request.args.get("age")
+            uptated_gender = request.args.get("gender")
+
+            uptaded_actor = Actors(name=uptated_name, age=uptated_age, gender=uptated_gender)
+            uptaded_actor.update()
+
+            return jsonify({
+                'code': 'success'
+            })
+        
+        except Exception:
+            abort(422)
+
     # @app.route('/actors/<int:id>', methods=['PATCH'])
     # # @requires_auth(permission='patch:actors')
     # def edit_actor(payload, id):
@@ -131,9 +184,9 @@ def create_app(test_config=None):
 
             new_movie = Movies(title=title, release_date=release_date, actor_id=actor_id)
             new_movie.insert()
-        except DatabaseError:
-            db.session.rollback()
+        except:
             abort(422)
+
         finally:
             db.session.close()
             return jsonify({
