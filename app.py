@@ -105,7 +105,7 @@ def create_app(test_config=None):
     # Movies
     
     @app.route('/movies', methods=['GET'])
-    @requires_auth(permission='get:movies')
+    @requires_auth('get:movies')
     def get_Movies(payload):
         '''
         This endpoint is responsible for returning all Movies from DB
