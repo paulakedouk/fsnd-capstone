@@ -59,7 +59,7 @@
             
             {% for movie in movies %}
             <li class="list-group-item" data-id="{{ movie.id }}" id="movie-list">{{ movie.title }}
-                <button class="delete-movie" data-id="{{ movie.id }}">&cross;</button>
+                <button id="delete-btn" class="delete-movie" data-id="{{ movie.id }}">&cross;</button>
             </li>
             {% endfor %}
                 
@@ -72,7 +72,6 @@
             {% for actor in actors %}
             <li class="list-group-item" data-id="{{ actor.id }}" id="actor-list">
                 {{ actor.name }}
-                <button class="delete-actor" data-id="{{ actor.id }}">&cross;</button>
             </li>
             {% endfor %}
         </ul>
@@ -96,7 +95,7 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
 
-        <button href="https://fsndpaula.auth0.com/authorize?audience=api&response_type=token&client_id=EHUF6nr6QpYJSMYO9BQFjl4yqTsQjZ2m&redirect_uri=https://fsnd-capstone-udacity.herokuapp.com/" type="button" class="btn btn-dark button">Logout</button>
+        <button href="https://fsnd-capstone-udacity.herokuapp.com/" type="button" class="btn btn-dark button">Logout</button>
        
     </div>
     <script>
@@ -111,7 +110,7 @@
                     'actor_id': document.getElementById('actor_id').value,
                 }),
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Authorization': 'Bearer <token>'
                 }
             })
             .then(function(response) {
@@ -124,7 +123,7 @@
 
                 newMovie.innerHTML = jsonResponse['title'];
                 btn.innerHTML = '&cross;';
-                addDeleteMovie(btn);
+                deleteData(btn)
 
                 newMovie.appendChild(btn);
                     
@@ -139,24 +138,14 @@
             })
         }
 
-        function addDeleteMovie(btn) {
+        function deleteData(btn) {
             btn.onclick = function(e) {
                 const movieId = e.target.dataset['id'];
                 fetch('/movies/' + movieId, {
-                    method: 'DELETE'
-                })
-                .then(function() {
-                    const item = e.target.parentElement;
-                    item.remove();
-                })
-            }
-        }
-
-        function addDeleteActor(btn) {
-            btn.onclick = function(e) {
-                const actorId = e.target.dataset['id'];
-                fetch('/actors/' + actorId, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                    'Authorization': 'Bearer <token>'
+                }
                 })
                 .then(function() {
                     const item = e.target.parentElement;
@@ -168,14 +157,9 @@
         const deleteMovie= document.querySelectorAll('.delete-movie');
         for (let i = 0; i < deleteMovie.length; i++) {
             const btn = deleteMovie[i];
-            addDeleteMovie(btn);
+            deleteData(btn);
         }
-        
-        const deleteActor = document.querySelectorAll('.delete-actor');
-        for (let i = 0; i < deleteActor.length; i++) {
-            const btn = deleteActor[i];
-            addDeleteActor(btn);
-        }
+    
     </script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
